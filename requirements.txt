@@ -1,0 +1,32 @@
+# =========================
+# Core Utilities
+# =========================
+numpy
+pandas
+streamlit
+
+# =========================
+# Machine Learning / Face Recognition
+# =========================
+scikit-learn
+dlib-bin
+face-recognition-models @ git+https://github.com/ageitgey/face_recognition_models
+setuptools
+
+# =========================
+# Backend / Authentication
+# =========================
+supabase
+bcrypt
+
+# =========================
+# Image Processing
+# =========================
+pillow
+segno
+
+# =========================
+# Audio Processing / Voice Recognition
+# =========================
+librosa
+resemblyzer
