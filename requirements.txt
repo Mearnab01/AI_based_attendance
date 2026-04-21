@@ -30,3 +30,5 @@ segno
 # =========================
 librosa
 resemblyzer
+
+-e .
