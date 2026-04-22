@@ -60,16 +60,10 @@ temp/
 .env
 .env.*
 *.env
-# ----------------------
-# ENV FILES (DO NOT PUSH)
-# ----------------------
-.env
-.env.*
-*.env
 
 # allow example env
 !.env.example
-
+inter_*
 # =========================
 # Node (if frontend exists)
 # =========================

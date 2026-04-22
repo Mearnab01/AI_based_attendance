@@ -29,6 +29,10 @@ segno
 # Audio Processing / Voice Recognition
 # =========================
 librosa
-resemblyzer
+typing
+
+# webrtcvad and resemblyzer — install manually in this order:
+# pip install webrtcvad-wheels==2.0.14
+# pip install resemblyzer --no-deps
 
 -e .

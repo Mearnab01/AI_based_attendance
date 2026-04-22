@@ -1,0 +1,111 @@
+from database.config import supabase
+import bcrypt
+
+# ── Auth Helpers ─────────────────────────────────────────────────────────
+def hash_pass(pwd:str)-> str:
+    str_to_byte = pwd.encode()
+    gen_22_char_random_salt = bcrypt.gensalt()
+    
+    # hashes password + salt together
+    hash_all = bcrypt.hashpw(str_to_byte,gen_22_char_random_salt)
+    
+    byte_to_str = hash_all.decode()
+    return byte_to_str
+
+def check_pass(pwd:str, hashed:str)-> bool:
+    return bcrypt.checkpw(pwd.encode(), hashed.encode())
+
+# ── Teachers ─────────────────────────────────────────────────────────────
+def check_teacher_exists(username:str)-> bool:
+    res = supabase.table("teachers").select("username").eq("username", username).execute()
+    
+    return len(res.data) > 0
+
+def create_teacher(username:str, password:str, name:str):
+    res = supabase.table('teachers').insert({
+        "username":username,
+        "password":hash_pass(password),
+        "name":name
+    }).execute()
+    return res.data
+
+def teacher_login(username:str, password:str):
+    res = supabase.table("teachers").select("*").eq("username", username).execute()
+    if not res.data:
+        return None
+    
+    teacher = res.data[0]
+    return teacher if check_pass(password, teacher['password']) else None
+
+# TODO: 1
+def get_teacher_subjects(teacher_id:int):
+    pass
+
+# TODO: 2
+def get_subject_class_count(subject_id:int)->int:
+    pass
+
+# TODO: 3
+def get_attendance_for_teacher(teacher_id: int):
+    pass
+
+
+# ── Students ─────────────────────────────────────────────────────────────
+def get_all_students():
+    res = supabase.table("students").select("*").execute()
+    return res.data
+
+def create_student(name:str, face_embedding=None, voice_embedding=None):
+    res = supabase.table("students").insert({
+        "name": name,
+        "face_embedding": face_embedding,
+        "voice_embedding": voice_embedding
+    }).execute()
+    
+    return res.data
+
+# TODO: 4
+def get_student_subjects(student_id: int):
+    pass
+
+# TODO: 5
+def get_student_attendance(student_id: int):
+    pass
+
+# ── Subjects ─────────────────────────────────────────────────────────────────
+ 
+def create_subject(subject_code: str, name: str, section: str, teacher_id: int):
+    res = supabase.table("subjects").insert({
+        "subject_code": subject_code,
+        "name": name,
+        "section": section,
+        "teacher_id": teacher_id
+    }).execute()
+    return res.data
+
+def enroll_student_to_subject(student_id: int, subject_id: int):
+    res = supabase.table("subject_students").insert({
+        "student_id": student_id,
+        "subject_id": subject_id
+    }).execute()
+    return res.data
+ 
+ 
+def unenroll_student_to_subject(student_id: int, subject_id: int):
+    res = (
+        supabase.table("subject_students")
+        .delete()
+        .eq("student_id", student_id)
+        .eq("subject_id", subject_id)
+        .execute()
+    )
+    return res.data
+
+
+# ── Attendance ────────────────────────────────────────────────────────────────
+ 
+def create_attendance(logs: list):
+    if not logs:
+        return []
+    res = supabase.table("attendance_logs").insert(logs).execute()
+    return res.data
