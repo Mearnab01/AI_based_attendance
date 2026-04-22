@@ -8,6 +8,15 @@ def style_background_home():
                 background: linear-gradient(135deg, #0f1123 0%, #1a1f3c 60%, #0f1123 100%) !important;
                 min-height: 100vh;
             }
+            .stApp input{
+                border-radius: 10px !important;
+                border: 1.5px solid #e2e5f0 !important;
+                background: #fafbff !important;
+                font-size: 0.9rem !important;
+                color: #1a1f3c !important;
+                padding: 10px 14px !important;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+            }
 
             .stApp div[data-testid="stColumn"] {
                 background: rgba(255, 255, 255, 0.04) !important;
@@ -26,10 +35,19 @@ def style_background_dashboard():
     st.markdown("""
         <style>
             .stApp {
-                background: #f4f5fb !important;
+                background: linear-gradient(135deg, #0f1123 0%, #1a1f3c 60%, #0f1123 100%) !important;
                 min-height: 100vh;
+                
             }
-
+            .stApp input{
+                border-radius: 10px !important;
+                border: 1.5px solid #e2e5f0 !important;
+                background: #fafbff !important;
+                font-size: 0.9rem !important;
+                color: #1a1f3c !important;
+                padding: 10px 14px !important;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+            }
             .stApp div[data-testid="stColumn"] {
                 background: transparent !important;
                 padding: 0 !important;
@@ -48,7 +66,7 @@ def style_base_layout():
 
         /* ── Reset & Hide Streamlit Chrome ── */
         #MainMenu, footer, header {
-            visibility: hidden;
+            display: none !important;
         }
 
         .block-container {

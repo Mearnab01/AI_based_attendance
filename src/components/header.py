@@ -72,7 +72,7 @@ def header_dashboard():
                 <img src='{logo_url}' style='height: 34px; width: 34px; object-fit: contain;' />
             </div>
             <div>
-                <h2 style='color: #1a1f3c; margin: 0; letter-spacing: -0.02em;'>SNAP CLASS</h2>
+                <h2 style='color: #d8dae6; margin: 0; letter-spacing: -0.02em;'>SNAP CLASS</h2>
                 <p style='
                     color: #8892b0;
                     margin: 0;

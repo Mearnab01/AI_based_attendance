@@ -5,6 +5,13 @@ from screens.teacher_screen import teacher_screen
 
 from utils.logger import get_logger
 logger = get_logger(__name__)
+
+st.set_page_config(
+    page_title="Snap Class | Advanced Attendance with AI Intelligent",
+    page_icon="🏫",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 def main():
     
     if 'login_type' not in st.session_state:
