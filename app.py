@@ -1,20 +1,27 @@
 import streamlit as st
-from components.header import header_home, header_dashboard
-from components.subject_card import subject_card
-from components.footer import footer_home, footer_dashboard
+from screens.home_screen import home_screen
+from screens.student_screen import student_screen
+from screens.teacher_screen import teacher_screen
+
 from utils.logger import get_logger
 logger = get_logger(__name__)
-
 def main():
-    st.set_page_config(page_title="SNAP CLASS", page_icon=":school:", layout="centered")
     
-    header_home()
-    header_dashboard()
-    # subject_card()
-    footer_home()
-    footer_dashboard()
-
-    logger.info("Application started successfully.")
+    if 'login_type' not in st.session_state:
+        st.session_state['login_type'] = None
+        
+    match st.session_state['login_type']:
+        case 'teacher':
+            teacher_screen()
+        case 'student':
+            student_screen()
+        case None:
+            home_screen()
+        
+   
     
-    
-main()
+try:
+    main()
+except Exception as e:
+    logger.exception("Critical app crash")
+    st.error("Unexpected error occurred")

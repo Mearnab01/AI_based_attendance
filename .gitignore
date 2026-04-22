@@ -55,11 +55,20 @@ tmp/
 temp/
 
 # =========================
-# Environment Variables (VERY IMPORTANT 🚨)
+# Environment Variables (VERY IMPORTANT)
 # =========================
 .env
 .env.*
 *.env
+# ----------------------
+# ENV FILES (DO NOT PUSH)
+# ----------------------
+.env
+.env.*
+*.env
+
+# allow example env
+!.env.example
 
 # =========================
 # Node (if frontend exists)
