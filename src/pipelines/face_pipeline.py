@@ -38,30 +38,69 @@ def extract_face_embedding(image_np):
     return embeddings
 
 @st.cache_resource
-def get_trained_model():
-    X = []
-    y = []
+def get_trained_model()->dict | None:
+    X = [] # embeddings of 15 students
+    y = [] # corresponding student IDs
 
 
-    student_db = get_all_students()
+    students = get_all_students()
 
-    if not student_db:
+    if not students:
         return None
     
-    for student in student_db:
-        embedding = student.get('face_embedding')
+    for student in students:
+        embedding = student.get('face_embeddings')
         if embedding:
             X.append(np.array(embedding))
             y.append(student.get('student_id'))
 
-    if len(X) ==0:
-        return 0
+    if not X:
+        return None
     
     clf = SVC(kernel='linear', probability=True, class_weight='balanced')
 
     try:
         clf.fit(X, y)
-    except ValueError:
-        pass
+    except ValueError as e:
+        print(f"[get_trained_model] fit error: {e}")
+        return None
 
-    return {'clf': clf, 'X':X, "y":y}
+    return {'clf': clf, 'X': X, 'y': y}
+
+def train_classifier()->bool:
+    st.cache_resource.clear()
+    return bool(get_trained_model())
+
+
+# ── Prediction ────────────────────────────────────────────────────────────────
+ 
+def predict_attendance(class_image_np: np.ndarray) -> tuple[dict, list, int]:
+    encodings = extract_face_embedding(class_image_np) or [np.zeros(128)]
+    detected_studnets = {}
+    model_data = get_trained_model()
+    
+    if not model_data:
+        return detected_studnets, [], 0 
+    
+    clf = model_data['clf']
+    X_train = model_data['X']
+    y_train = model_data['y']
+    
+    all_students = sorted(set(y_train))
+    
+    for encoding in encodings:
+        # Need at least 2 classes for SVC predict — fallback to only student if one enrolled
+        predicted_id = (
+            int(clf.predict([encoding])[0])
+            if len(all_students) >= 2
+            else int(all_students[0])
+        )
+        
+        student_embeddings = X_train[y_train.index(predicted_id)]
+        best_match_score = np.linalg.norm(student_embeddings - encoding)
+        
+        if best_match_score < 0.6:  # Threshold for a valid match
+            detected_studnets[predicted_id] = True
+            
+    return detected_studnets, all_students, len(encodings)
+         

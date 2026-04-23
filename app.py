@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+
 import streamlit as st
 from screens.home_screen import home_screen
 from screens.student_screen import student_screen
