@@ -13,7 +13,7 @@ def load_voice_model()->VoiceEncoder:
 def get_voice_embedding(audio_bytes:bytes)->list |None:
     try:
         encoder = load_voice_model()
-        audio, _ = librosa.load(io.BytesIO(audio_bytes), sr=16000)
+        audio, sr = librosa.load(io.BytesIO(audio_bytes), sr=16000)
         wav = preprocess_wav(audio)
         return encoder.embed_utterance(wav).tolist()
     except Exception as e:

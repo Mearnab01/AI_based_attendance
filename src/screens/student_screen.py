@@ -1,3 +1,4 @@
+import cv2
 import streamlit as st
 from ui.base_layout import style_base_layout, style_background_dashboard
 from src.components.header import header_dashboard
@@ -126,9 +127,11 @@ def student_login_screen():
 # ── Face login handler ────────────────────────────────────────────────────────
 def _handle_face_login(photo_source):
     img = np.array(Image.open(photo_source))
-    
+    img = _preprocess_frame(img)
+      
     with st.spinner("Processing..."):
-        detected, all_ids, num_faces = predict_attendance(img)    
+        detected, all_ids, num_faces = predict_attendance(img) 
+        # print(f"[debug_] Detected: {detected}, All IDs: {all_ids}, Num faces: {num_faces}")   
         
     if num_faces == 0:
         st.warning('No face detected. Please adjust your position and try again.')
@@ -154,6 +157,12 @@ def _handle_face_login(photo_source):
     st.toast(f"Welcome back, {student['name']}!")
     st.rerun()
     return False
+
+def _preprocess_frame(image_np: np.ndarray) -> np.ndarray:
+    lab = cv2.cvtColor(image_np, cv2.COLOR_RGB2LAB)
+    l, a, b = cv2.split(lab)
+    l = cv2.equalizeHist(l)
+    return cv2.cvtColor(cv2.merge([l, a, b]), cv2.COLOR_LAB2RGB)
 
 # ── Registration panel ────────────────────────────────────────────────────────
 def _registration_panel(photo_source):
@@ -208,6 +217,7 @@ def _handle_registration(new_name:str, photo_source, audio_data):
         
         face_emb = encodings[0].tolist()  # Assuming one face for registration
         voice_emb = get_voice_embedding(audio_data.read()) if audio_data else None
+        print(voice_emb, "from line 220 student screen")
         response_data = create_student(
             new_name,
             face_embeddings=face_emb,

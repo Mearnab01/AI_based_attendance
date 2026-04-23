@@ -37,9 +37,26 @@ def teacher_login(username:str, password:str):
     teacher = res.data[0]
     return teacher if check_pass(password, teacher['password']) else None
 
-# TODO: 1
+
 def get_teacher_subjects(teacher_id:int):
-    pass
+    response = supabase.table('subjects').select(
+        "*, subject_students(count), attendance_logs(timestamp)"
+    ).eq("teacher_id", teacher_id).execute()
+    
+    subjects = response.data
+    
+    for sub in subjects:
+        sub['total_students'] = sub.get('subject_students', [{}])[0].get('count', 0) if sub.get('subject_students') else 0
+        
+        attendance = sub.get('attendance_logs', [])
+        unique_session = len(set(log['timestamp'] for log in attendance))
+        sub['total_classes'] = unique_session
+        
+        sub.pop('subject_students', None)
+        sub.pop('attendance_logs', None)
+        
+    return subjects
+        
 
 # TODO: 2
 def get_subject_class_count(subject_id:int)->int:
@@ -55,11 +72,11 @@ def get_all_students():
     res = supabase.table("students").select("*").execute()
     return res.data
 
-def create_student(name:str, face_embedding=None, voice_embedding=None):
+def create_student(name:str, face_embeddings=None, voice_embeddings=None):
     res = supabase.table("students").insert({
         "name": name,
-        "face_embedding": face_embedding,
-        "voice_embedding": voice_embedding
+        "face_embeddings": face_embeddings,
+        "voice_embeddings": voice_embeddings
     }).execute()
     
     return res.data

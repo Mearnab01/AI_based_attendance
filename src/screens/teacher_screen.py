@@ -1,12 +1,17 @@
 import streamlit as st
 from ui.base_layout import style_base_layout, style_background_dashboard
-from src.components.header import header_dashboard
-
+from components.header import header_dashboard
+from components.footer import footer_dashboard
+from components.subject_card import subject_card
+from components.dialog_create_subject import create_subject_dialog
+from components.dialog_share_subject import share_subject_dialog
 # services
 from services.teacher_services import (
     register_teacher_service, 
     login_teacher_service
     )
+# database
+from database.db import get_teacher_subjects
 
 LOGIN = "Login"
 REGISTER = "Register"
@@ -41,8 +46,43 @@ def teacher_dashborad():
             st.session_state['is_logged_in'] = False
             del st.session_state.teacher_data 
             st.rerun()
+    st.title(f"""Welcome Back, {teacher_data['name']} """)
     st.divider()
-    st.subheader(f"""Welcome Back, {teacher_data['name']} """)
+    
+    if "current_teacher_tab" not in st.session_state:
+        st.session_state['current_teacher_tab'] = 'take_attendance'
+    
+    tab1, tab2, tab3 = st.columns([1,1,1], gap='large')
+    with tab1:
+        type1 = "primary" if st.session_state['current_teacher_tab'] == 'take_attendance' else "tertiary"
+        
+        if st.button('Take Attendance',type=type1, width='stretch'):
+            st.session_state['current_teacher_tab'] = 'take_attendance'
+            st.rerun()
+
+    with tab2:
+        type2 = "primary" if st.session_state['current_teacher_tab'] == 'manage_subjects' else "tertiary"
+        
+        if st.button('Manage Subjects', type=type2, width='stretch'):
+            st.session_state['current_teacher_tab'] = 'manage_subjects'
+            st.rerun()
+
+    with tab3:
+        type3 = "primary" if st.session_state['current_teacher_tab'] == 'attendance_records' else "tertiary"
+        
+        if st.button('Attendance Records',type=type3, width='stretch'):
+            st.session_state['current_teacher_tab'] = 'attendance_records'
+            st.rerun()
+
+    if st.session_state.current_teacher_tab == "take_attendance":
+        teacher_tab_take_attendance()
+    if st.session_state.current_teacher_tab == "manage_subjects":
+        teacher_tab_manage_subjects()
+    if st.session_state.current_teacher_tab == "attendance_records":
+        teacher_tab_attendance_records()
+
+    st.divider()
+    footer_dashboard()
 
 ## ================================================================================
 ## Teacher login screen
@@ -109,7 +149,6 @@ def teacher_screen_login():
 
 ## ================================================================================
 
-
 ## Teacher register screen
 def teacher_screen_register():
     c1, c2 = st.columns(2, vertical_alignment='center', gap='xxlarge')
@@ -173,5 +212,47 @@ def teacher_screen_register():
                 st.error(message)
                 
             
-        
-        
+## ================================================================================
+def teacher_tab_take_attendance():
+    pass
+
+def teacher_tab_manage_subjects():
+    teacher_id = st.session_state.teacher_data['teacher_id']
+    col1, col2 = st.columns(2, vertical_alignment='center', gap='large')
+    with col1:
+        st.header("Manage Subjects", width='stretch')
+    with col2:
+        if st.button("Add Subject", type='primary', width='stretch'):
+            create_subject_dialog(teacher_id)
+            
+    ## LIST OF SUBJECTS
+    subjects = get_teacher_subjects(teacher_id)
+
+    if subjects:
+        for sub in subjects:
+            stats = [
+                ("👨‍🎓", "Students", sub['total_students']),
+                ("🕰️", "Classes", sub['total_classes']),
+            ]
+
+            subject_card(
+                name=sub['name'],
+                code=sub['subject_code'],
+                section=sub['section'],
+                stats=stats
+            )
+            
+            if st.button(
+                f"Share code {sub['name']}",
+                key=f"share_{sub['subject_code']}",
+                icon="🔗",
+            ):
+                share_subject_dialog(sub['name'], sub['subject_code'])
+
+           
+
+    else:
+        st.info("No subjects found. Please add a subject to get started.")    
+    
+def teacher_tab_attendance_records():
+    pass
