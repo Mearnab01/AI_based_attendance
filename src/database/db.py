@@ -62,9 +62,10 @@ def get_teacher_subjects(teacher_id:int):
 def get_subject_class_count(subject_id:int)->int:
     pass
 
-# TODO: 3
 def get_attendance_for_teacher(teacher_id: int):
-    pass
+    response = supabase.table('attendance_logs').select('*, subjects!inner(*)').eq('subjects.teacher_id', teacher_id).execute()
+    
+    return response.data
 
 
 # ── Students ─────────────────────────────────────────────────────────────

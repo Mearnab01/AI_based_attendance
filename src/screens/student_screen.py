@@ -131,13 +131,13 @@ def student_login_screen():
 
     # Open camera
     with btn1:
-        if st.button('Open Camera', icon=":material/ar_on_you:", type="primary", use_container_width=True):
+        if st.button('Open Camera', icon=":material/ar_on_you:", type="primary", width='stretch'):
             st.session_state["open_camera"] = True
 
 
     # Close camera
     with btn2:
-        if st.button('Close Camera', icon=":material/cancel:", type="secondary", use_container_width=True):
+        if st.button('Close Camera', icon=":material/cancel:", type="secondary", width='stretch'):
             st.session_state["open_camera"] = False
             st.rerun()
 

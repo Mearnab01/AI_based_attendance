@@ -18,7 +18,7 @@ def create_subject_dialog(teacher_id):
     placeholder="Select Section"
 )
 
-    if st.button("Create Subject Now", icon=":material/check_circle:", type="primary", use_container_width=True):
+    if st.button("Create Subject Now", icon=":material/check_circle:", type="primary"):
         if not sub_id or not sub_name or not sub_section:
             st.error("Please fill in all the fields.")
             return

@@ -31,4 +31,4 @@ def enroll_dialog():
         subject = options[choice]
         enroll_student_to_subject(student_id, subject['subject_id'])
         st.success(f"Successfully enrolled in {subject['name']}!")
-        st.rerun()
+        st.rerun() 
