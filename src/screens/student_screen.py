@@ -7,6 +7,7 @@ from components.header import header_dashboard
 from components.footer import footer_dashboard
 from components.dialog_enroll import enroll_dialog
 from components.subject_card import subject_card
+from components.student_compliance import render_student_compliance
 from pipelines.face_pipeline import (
     predict_attendance,
     extract_face_embedding,
@@ -46,6 +47,7 @@ def student_dashboard():
             st.session_state['is_logged_in'] = False
             st.rerun()
     st.divider()
+    render_student_compliance(student_data['student_id'])
     
     c1, c2 = st.columns([2, 1], vertical_alignment='center')
     with c1:

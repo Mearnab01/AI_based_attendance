@@ -112,6 +112,11 @@ def enroll_student_to_subject(student_id: int, subject_id: int):
  
  
 def unenroll_student_to_subject(student_id: int, subject_id: int):
+    supabase.table("attendance_logs") \
+        .delete() \
+        .eq("student_id", student_id) \
+        .eq("subject_id", subject_id) \
+        .execute()
     res = (
         supabase.table("subject_students")
         .delete()
