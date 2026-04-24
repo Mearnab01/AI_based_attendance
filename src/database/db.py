@@ -81,13 +81,15 @@ def create_student(name:str, face_embeddings=None, voice_embeddings=None):
     
     return res.data
 
-# TODO: 4
-def get_student_subjects(student_id: int):
-    pass
 
-# TODO: 5
+def get_student_subjects(student_id: int):
+    response = supabase.table("subject_students").select("*, subjects(*)").eq("student_id", student_id).execute()
+    return response.data
+
+
 def get_student_attendance(student_id: int):
-    pass
+    response = supabase.table("attendance_logs").select("*, subjects(*)").eq("student_id", student_id).execute()
+    return response.data
 
 # ── Subjects ─────────────────────────────────────────────────────────────────
  
@@ -118,6 +120,13 @@ def unenroll_student_to_subject(student_id: int, subject_id: int):
     )
     return res.data
 
+def get_subject_by_code(subject_code: str):
+    res = supabase.table("subjects").select('subject_id, name').eq("subject_code", subject_code).execute()
+    return res.data[0] if res.data else None
+
+def is_student_enrolled(student_id: int, subject_id: int) -> bool:
+    res = supabase.table('subject_students').select('*').eq('subject_id', subject_id).eq('student_id', student_id).execute()
+    return bool(res.data)
 
 # ── Attendance ────────────────────────────────────────────────────────────────
  

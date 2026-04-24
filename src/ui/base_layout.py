@@ -66,7 +66,7 @@ def style_base_layout():
 
         /* ── Reset & Hide Streamlit Chrome ── */
         #MainMenu, footer, header {
-            display: none !important;
+            display: block !important;
         }
 
         .block-container {
@@ -217,5 +217,33 @@ def style_base_layout():
             background: #c7cbe8;
             border-radius: 999px;
         }
+        </style>
+    """, unsafe_allow_html=True)
+
+
+def apply_dialog_styles():
+    st.markdown("""
+        <style>
+            div[data-testid="stDialog"] div[role="dialog"]{
+                background: linear-gradient(135deg, #0f1123 0%, #1a1f3c 60%, #0f1123 100%) !important;
+                border: 2px solid #4F46E5;
+            }
+            .stTextInput input {
+                border-radius: 8px;
+                border: 1px solid #d1d5db;
+                color: #111827;
+                padding: 10px;
+            }
+            div.stButton > button:first-child {
+                background-color: #4F46E5;
+                color: white;
+                border-radius: 8px;
+                font-weight: 600;
+                transition: 0.3s;
+            }
+            div.stButton > button:first-child:hover {
+                background-color: #4338CA;
+                border-color: #4338CA;
+            }
         </style>
     """, unsafe_allow_html=True)

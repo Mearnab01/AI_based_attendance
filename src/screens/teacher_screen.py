@@ -213,6 +213,8 @@ def teacher_screen_register():
                 
             
 ## ================================================================================
+
+## Teacher dashboard tabs
 def teacher_tab_take_attendance():
     pass
 

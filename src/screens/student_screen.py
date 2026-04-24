@@ -1,17 +1,25 @@
 import cv2
 import streamlit as st
-from ui.base_layout import style_base_layout, style_background_dashboard
-from src.components.header import header_dashboard
-from src.components.footer import footer_dashboard
 from PIL import Image
 import numpy as np
+from ui.base_layout import style_base_layout, style_background_dashboard
+from components.header import header_dashboard
+from components.footer import footer_dashboard
+from components.dialog_enroll import enroll_dialog
+from components.subject_card import subject_card
 from pipelines.face_pipeline import (
     predict_attendance,
     extract_face_embedding,
     train_classifier
     )
 from pipelines.voice_pipeline import get_voice_embedding
-from database.db import get_all_students, create_student
+from database.db import (
+    get_all_students, 
+    create_student, 
+    get_student_subjects, 
+    get_student_attendance,
+    unenroll_student_to_subject
+)
 
 
 def student_screen():
@@ -33,18 +41,6 @@ def student_dashboard():
         header_dashboard()
         
     with c2:
-        st.markdown(f"""
-            <div style="text-align:right; padding:0.25rem 0;">
-                <p style="margin:0; font-size:0.75rem; color:#8892b0;
-                          text-transform:uppercase; letter-spacing:0.06em; font-weight:500;">
-                    Signed in as
-                </p>
-                <p style="margin:0; font-size:1rem; font-weight:700; color:#1a1f3c;">
-                    {student_data['name']}
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
-        
         if st.button("Logout", type='secondary', key='student_logout_btn', shortcut="control+backspace"):
             del st.session_state.student_data 
             st.session_state['is_logged_in'] = False
@@ -53,18 +49,53 @@ def student_dashboard():
     
     c1, c2 = st.columns([2, 1], vertical_alignment='center')
     with c1:
-        st.markdown("""
-            <div>
-                <h3 style="color:#1a1f3c; margin:0;">Your Enrolled Subjects</h3>
-                <p style="color:#8892b0; margin:0.25rem 0 0 0; font-size:0.875rem;">
-                    Track your attendance across all enrolled courses.
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.header(f"Welcome, {student_data['name']}!")
+        # if enrolled then show 
+        if get_student_subjects(student_id):
+            st.write("Here's your attendance overview:")
     with c2:
         if st.button('Enroll in Subject', type='primary', width='stretch'):
-            st.header("Enroll in Subject")
-            st.write("This feature is coming soon! Stay tuned for updates.")
+            enroll_dialog()
+            
+    st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
+    
+    with st.spinner("Loading your subjects..."):
+        subjects = get_student_subjects(student_id)
+        attendance_logs = get_student_attendance(student_id)
+    stat_maps = _build_stats_map(attendance_logs)
+    
+    if not subjects:
+        st.info('You are not enrolled in any subjects yet. Click "Enroll in Subject" to get started!')
+    else:
+        cols = st.columns(2, gap='medium')
+        for i, sub_node in enumerate(subjects):
+            sub = sub_node['subjects']
+            sid = sub['subject_id']
+            stats = stat_maps.get(sid, {"total": 0, "attended": 0})
+            
+            def unenroll_btn(bound_sid=sid, bound_name=sub['name']):
+                if st.button(
+                    "Unenroll",
+                    type='secondary',
+                    width='stretch',
+                    key=f'unenroll_{bound_sid}',
+                    icon="🚫"
+                ):
+                    unenroll_student_to_subject(student_id, bound_sid)
+                    st.toast(f"You have been unenrolled from {bound_name}.")
+                    st.rerun()
+            with cols[i % 2]:
+                subject_card(
+                    name=sub['name'],
+                    code=sub['subject_code'],
+                    section=sub['section'],
+                    stats=[
+                        ('', 'Total Classes', stats['total']),
+                        ('', 'Attended',      stats['attended']),
+                    ],
+                    footer_callback=unenroll_btn
+                )
+                
     
 
 # ── Login screen ──────────────────────────────────────────────────────────────
@@ -237,3 +268,15 @@ def _set_student_session(student):
     st.session_state.is_logged_in = True
     st.session_state.user_role    = 'student'
     st.session_state.student_data = student
+    
+
+def _build_stats_map(logs: list) -> dict:
+    stats_map = {}
+    for log in logs:
+        sid = log['subject_id']
+        if sid not in stats_map:
+            stats_map[sid] = {"total": 0, "attended": 0}
+        stats_map[sid]['total'] += 1
+        if log.get('is_present'):
+            stats_map[sid]['attended'] += 1
+    return stats_map

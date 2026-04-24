@@ -1,37 +1,12 @@
 import streamlit as st
 from database.db import create_subject
+from ui.base_layout import apply_dialog_styles
+
+apply_dialog_styles()
 
 @st.dialog(title="Create Subject")
 def create_subject_dialog(teacher_id):
-    # --- ADD CSS HERE ---
-    st.markdown("""
-        <style>
-            /* Style the dialog container */
-            div[data-testid="stDialog"] div[role="dialog"]{
-                background: linear-gradient(135deg, #0f1123 0%, #1a1f3c 60%, #0f1123 100%) !important;
-                border: 2px solid #4F46E5;
-            }
-            /* Make inputs look cleaner */
-            .stTextInput input {
-                border-radius: 8px;
-                border: 1px solid #d1d5db;
-                color: #111827;
-                padding: 10px;
-            }
-            /* Customizing the Primary Button */
-            div.stButton > button:first-child {
-                background-color: #4F46E5;
-                color: white;
-                border-radius: 8px;
-                font-weight: 600;
-                transition: 0.3s;
-            }
-            div.stButton > button:first-child:hover {
-                background-color: #4338CA;
-                border-color: #4338CA;
-            }
-        </style>
-    """, unsafe_allow_html=True)
+    
 
     st.write("Enter the name of the subject you want to create.")
     

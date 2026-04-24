@@ -70,8 +70,8 @@ def process_bulk_audio(
                 continue
  
             segment_audio = audio[start:end]
-            wav           = preprocess_wav(segment_audio)
-            embedding     = encoder.embed_utterance(wav)
+            wav = preprocess_wav(segment_audio)
+            embedding = encoder.embed_utterance(wav)
  
             sid, score = identify_speaker(embedding, candidates_dict, threshold)
  
