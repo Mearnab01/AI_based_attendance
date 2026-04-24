@@ -2,19 +2,23 @@ import streamlit as st
 from database.db import create_subject
 from ui.base_layout import apply_dialog_styles
 
-apply_dialog_styles()
 
 @st.dialog(title="Create Subject")
 def create_subject_dialog(teacher_id):
+    apply_dialog_styles()
     
-
     st.write("Enter the name of the subject you want to create.")
     
-    sub_id = st.text_input("Subject ID", placeholder="CS101")
+    sub_id = st.text_input("Subject ID", placeholder="TIU-PCA-101")
     sub_name = st.text_input("Subject Name", placeholder="Introduction to Computer Science")
-    sub_section = st.text_input("Section", placeholder="A")
+    sub_section = st.selectbox(
+    "Section",
+    ["A", "B", "Both"],
+    index=None,
+    placeholder="Select Section"
+)
 
-    if st.button("Create Subject Now", type="primary", use_container_width=True):
+    if st.button("Create Subject Now", icon=":material/check_circle:", type="primary", use_container_width=True):
         if not sub_id or not sub_name or not sub_section:
             st.error("Please fill in all the fields.")
             return

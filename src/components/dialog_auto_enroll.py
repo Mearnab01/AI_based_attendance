@@ -14,14 +14,14 @@ def auto_enroll_dialog(subject_code: str):
     
     if not subject:
         st.error("Invalid subject code")
-        if st.button("Close"):
+        if st.button("Clear", icon=":material/delete_sweep"):
             st.query_params.clear()
             st.rerun()
         return
     
     if is_student_enrolled(student_id, subject['subject_id']):
         st.info(f"Already enrolled in {subject['name']}")
-        if st.button("Got it"):
+        if st.button("Got it", icon=":material/check_circle:"):
             st.query_params.clear()
             st.rerun()
         return
@@ -29,11 +29,11 @@ def auto_enroll_dialog(subject_code: str):
     st.markdown(f"Would you like to enroll in **{subject['name']}**?")
     col1, col2 = st.columns(2)
     with col1:
-        if st.button('No thanks', width='stretch'):
+        if st.button("No thanks", icon=":material/frame_exclamation:", width='stretch'):
             st.query_params.clear()
             st.rerun()
     with col2:
-        if st.button('Yes, enroll now!', type='primary', width='stretch'):
+        if st.button("Yes, enroll now!", icon=":material/check_circle:", type='primary', width='stretch'):
             enroll_student_to_subject(student_id, subject['subject_id'])
             st.success('Joined successfully!')
             st.query_params.clear()

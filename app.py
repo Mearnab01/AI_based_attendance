@@ -29,7 +29,7 @@ def main():
         case None:
             home_screen()
             
-    join_code = st.query_params.get("join_code", [None])
+    join_code = st.query_params.get("join_code")
     if join_code:
         if not(
             st.session_state.get('is_logged_in') and

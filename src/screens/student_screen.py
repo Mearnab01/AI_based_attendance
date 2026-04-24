@@ -41,7 +41,7 @@ def student_dashboard():
         header_dashboard()
         
     with c2:
-        if st.button("Logout", type='secondary', key='student_logout_btn', shortcut="control+backspace"):
+        if st.button("Logout", icon=":material/exit_to_app:", type='secondary', key='student_logout_btn', shortcut="control+backspace"):
             del st.session_state.student_data 
             st.session_state['is_logged_in'] = False
             st.rerun()
@@ -54,7 +54,7 @@ def student_dashboard():
         if get_student_subjects(student_id):
             st.write("Here's your attendance overview:")
     with c2:
-        if st.button('Enroll in Subject', type='primary', width='stretch'):
+        if st.button('Enroll in Subject', icon=":material/add_circle:", type='primary', width='stretch'):
             enroll_dialog()
             
     st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
@@ -74,15 +74,14 @@ def student_dashboard():
             stats = stat_maps.get(sid, {"total": 0, "attended": 0})
             
             def unenroll_btn(bound_sid=sid, bound_name=sub['name']):
-                if st.button(
-                    "Unenroll",
+                if st.button("Unenroll",  
+                    icon=":material/person_remove:",
                     type='secondary',
                     width='stretch',
                     key=f'unenroll_{bound_sid}',
-                    icon="🚫"
                 ):
                     unenroll_student_to_subject(student_id, bound_sid)
-                    st.toast(f"You have been unenrolled from {bound_name}.")
+                    st.info(f"You have been unenrolled from {bound_name}.")
                     st.rerun()
             with cols[i % 2]:
                 subject_card(
@@ -105,7 +104,7 @@ def student_login_screen():
     with c1:
         header_dashboard()
     with c2:
-        if st.button("Go to Home", type='secondary', key='student_back_btn', shortcut="control+backspace"):
+        if st.button('Go to Home', icon=":material/home:", type='secondary', key='student_back_btn', shortcut="control+backspace"):
             st.session_state['login_type'] = None
             st.rerun()
 
@@ -132,13 +131,13 @@ def student_login_screen():
 
     # Open camera
     with btn1:
-        if st.button("Open Camera", type="primary", use_container_width=True):
+        if st.button('Open Camera', icon=":material/ar_on_you:", type="primary", use_container_width=True):
             st.session_state["open_camera"] = True
 
 
     # Close camera
     with btn2:
-        if st.button("Close Camera", type="secondary", use_container_width=True):
+        if st.button('Close Camera', icon=":material/cancel:", type="secondary", use_container_width=True):
             st.session_state["open_camera"] = False
             st.rerun()
 
@@ -228,7 +227,7 @@ def _registration_panel(photo_source):
  
         st.markdown("<div style='height:0.5rem'></div>", unsafe_allow_html=True)
  
-        if st.button('Create Account', type='primary', width='stretch'):
+        if st.button('Create Account', icon=":material/account_circle:", type='primary', width='stretch'):
             _handle_registration(new_name, photo_source, audio_data)
     
     
